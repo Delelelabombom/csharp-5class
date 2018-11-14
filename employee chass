@@ -1,0 +1,200 @@
+using System;
+
+
+using System.IO;
+
+namespace ConsoleApp1
+{
+    class Employee
+    {
+        public static int NextId { get; private set; }
+
+        public string FirstName { get; set; }
+        public string LastName
+        {
+            get
+            {
+                return _LastName;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    throw new ArgumentNullException("value absent");
+                }
+                else
+                {
+                    value = value.Trim();
+                    if (value == "")
+                    {
+                        throw new ArgumentException(
+                            "LastName cannot be blank");
+                    }
+                    else
+                        _LastName = value;
+                }
+            }
+        }
+        private string _LastName;
+        public string Name
+        {
+            get
+            {
+                return FirstName + " " + LastName;
+            }
+            set
+            {
+                string[] names;
+                names = value.Split(new char[] { ' ' });
+                if (names.Length == 2)
+                {
+                    FirstName = names[0];
+                    LastName = names[1];
+                } else
+                {
+                    throw new System.ArgumentException(
+                        string.Format(
+                            "Assigned value '{0}' is invalid", value));
+                }
+            }
+        }
+        public string Salary { get; set; }
+        private string Password;
+        private bool IsAuthenticated;
+
+        public string Id { get; set; }
+
+
+        static Employee()
+        {
+            Random randomGenerator = new Random();
+            NextId = randomGenerator.Next(101, 999);
+        }
+        public Employee(string firName = "Ada",string LastName = "Wang")
+        {
+            FirstName = firName;
+            this.LastName = LastName;
+            Id = NextId++.ToString();
+        }
+        public Employee(string id, string firstName, string lastName)
+            :this(firstName,lastName)
+        {
+            Id = id;
+            NextId--;
+        }
+        public Employee(int id, string firstName, string lastName)
+            : this(id.ToString(),firstName, lastName)
+        {
+        }
+
+        public void Initialize(int id)
+        {
+            Id = id.ToString();
+        }
+        /*public void Initialize(
+            string newFirstName,string newLastNName)
+        {
+            FirstName = newFirstName;
+            LastName = newLastNName;
+        }*/
+
+        public bool Logon(string password)
+        {
+            if(Password==password)
+            {
+                IsAuthenticated = true;
+            }
+            return IsAuthenticated;
+        }
+
+        public void Save()
+        {
+            DataStorage.Store(this);
+        }
+        public string GetName()
+        {
+            return FirstName + "" + LastName;
+        }
+        public void SetName(string newFirstName,string newLN)
+        {
+            FirstName = newFirstName;
+            LastName = newLN;
+            Console.WriteLine("Name changed to'{0}'", 
+                this.GetName());
+        }
+    }
+
+    class DataStorage
+    {
+        public static void Store(Employee employee)
+        {
+            FileStream stream = new FileStream(
+                employee.FirstName + employee.LastName + ".dat",
+                FileMode.Create);
+
+            StreamWriter writer = new StreamWriter(stream);
+
+            writer.WriteLine(employee.FirstName);
+            writer.WriteLine(employee.LastName);
+            writer.WriteLine(employee.Salary);
+
+            writer.Close();
+            //stream.Close();
+        }
+
+        public static Employee load(string firstName, string lastName)
+        {
+            Employee employee = new Employee();
+
+            FileStream stream = new FileStream(
+                firstName + lastName + ".dat", FileMode.Open);
+
+            StreamReader reader = new StreamReader(stream);
+
+            employee.FirstName = reader.ReadLine();
+            employee.LastName = reader.ReadLine();
+            employee.Salary = reader.ReadLine();
+
+            reader.Close();
+            return employee;
+        }
+    }
+
+    class Program
+    {
+        static int Main(string[] args)
+        {
+            //Employee employee1;
+
+            //Employee employee2 = new Employee();
+            //employee2.SetName("Inigo", "Montoya");
+            //employee2.Save();
+
+            //IncreasingSalary(employee2);
+
+            //employee1 = DataStorage.load("Inigo", "Montoya");
+
+            //Console.WriteLine(
+            //    "{0}:{1}",
+            //    employee1.GetName(),
+            //    employee1.Salary);
+
+            //Employee.NextId = 1000;
+
+            Employee employee1 = new Employee(
+               "isada", "iswang");
+            Employee employee2 = new Employee(
+                "john", "sm");
+            Console.WriteLine(employee2.Id);
+
+            return 0;
+            
+        }
+
+        static void IncreasingSalary(Employee employee)
+        {
+            employee.Salary = "Enough to survive on";
+        }
+
+    }
+}
