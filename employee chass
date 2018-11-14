@@ -1,6 +1,6 @@
+```c#
+
 using System;
-
-
 using System.IO;
 
 namespace ConsoleApp1
@@ -198,3 +198,5 @@ namespace ConsoleApp1
 
     }
 }
+
+```
